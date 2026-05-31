@@ -1,6 +1,7 @@
 """Cookidoo API package."""
 
-__version__ = "0.17.2"
+__version__ = "2.0.0"
+__api_version__ = "2"
 
 from .cookidoo import Cookidoo
 from .exceptions import (
@@ -36,6 +37,7 @@ from .types import (
 
 __all__ = [
     "Cookidoo",
+    "__api_version__",
     "get_country_options",
     "get_language_options",
     "get_localization_options",

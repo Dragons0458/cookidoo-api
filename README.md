@@ -30,6 +30,8 @@ See below for usage examples.
 
 ## Usage Example
 
+This release uses the Cookidoo API client v2 (`cookidoo_api.__api_version__ == "2"`). The package version is `2.0.0` because the public client methods moved behind domain services such as `auth`, `account`, `recipes`, `shopping_list`, `collections`, and `calendar`.
+
 The API is based on the `aiohttp` library. A `CookieJar(unsafe=True)` is required for the session to support cross-domain cookies during the OAuth2 login flow.
 
 Make sure to have stored your credentials in the top-level file `.env` as such, to loaded by `dotenv`. Alternatively, provide the environment variables by any other `dotenv` compatible means.
@@ -40,6 +42,18 @@ PASSWORD=password
 ```
 
 Run the [example script](https://github.com/miaucl/cookidoo-api/blob/master/example.py) and have a look at the inline comments for more explanation.
+
+```python
+jar = aiohttp.CookieJar(unsafe=True)
+async with aiohttp.ClientSession(cookie_jar=jar) as session:
+    cookidoo = Cookidoo(session, cfg=config)
+    await cookidoo.auth.login()
+
+    user_info = await cookidoo.account.get_user_info()
+    recipes = await cookidoo.recipes.search("Brötchen")
+    recipe_details = await cookidoo.recipes.get_details("r59322")
+    shopping_recipes = await cookidoo.shopping_list.recipes()
+```
 
 ## Exceptions
 

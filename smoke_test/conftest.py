@@ -62,6 +62,6 @@ async def cookidoo_authenticated_api_client(
     )
 
     # Restore session from saved cookies
-    cookidoo.load_cookies(COOKIE_FILE)
+    cookidoo.auth.load_cookies(COOKIE_FILE)
 
     return cookidoo

@@ -4,6 +4,12 @@
 
  This changelog is no longer maintained and will not be updated in future releases. Please refer to the [release notes](https://github.com/miaucl/cookidoo-api/releases/latest) on GitHub for the latest changes.
 
+## 2.0.0
+
+- Split the Cookidoo client into API v2 domain services.
+- Export `__api_version__ = "2"`.
+- Move the monolithic Cookidoo tests into domain-specific test modules.
+
 ## 0.12.2
 
 - Fix .co.uk countries which do share a common domain

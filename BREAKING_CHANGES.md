@@ -2,6 +2,12 @@
 
 This document tracks the breaking changes observed in the Cookidoo API.
 
+## 20260531
+
+- **Cookidoo client API v2.** The package is now `2.0.0` and exports `cookidoo_api.__api_version__ == "2"`.
+- **Client methods moved to domain services.** Use `cookidoo.auth.login()`, `cookidoo.account.get_user_info()`, `cookidoo.recipes.search(...)`, `cookidoo.shopping_list.recipes()`, `cookidoo.collections.custom.add(...)`, and `cookidoo.calendar.week(...)` instead of calling every method directly on `Cookidoo`.
+- **Custom recipe parameters use snake case.** Use `cookidoo.custom_recipes.add_from(recipe_id, serving_size)` instead of the old camelCase argument names.
+
 ## 20260508
 
 - **Authentication method changed from password grant to browser OAuth2 flow.** The `grant_type=password` endpoint at `{cc}.tmmobile.vorwerk-digital.com/ciam/auth/token` is deprecated. Authentication now follows the Cookidoo web app's browser-based OAuth2 redirect chain and uses session cookies instead of Bearer tokens.

@@ -60,85 +60,85 @@ async def main():
         # Try to load saved cookies, otherwise login fresh
         cookie_file = ".cookies"
         try:
-            cookidoo.load_cookies(cookie_file)
+            cookidoo.auth.load_cookies(cookie_file)
         except Exception:
-            await cookidoo.login()
-            cookidoo.save_cookies(cookie_file)
+            await cookidoo.auth.login()
+            cookidoo.auth.save_cookies(cookie_file)
 
         # Info
-        await cookidoo.get_user_info()
-        subscription = await cookidoo.get_active_subscription()
+        await cookidoo.account.get_user_info()
+        subscription = await cookidoo.account.get_active_subscription()
 
         # Some features are only available for premium accounts. To get a premium account, you need to subscribe to the Cookidoo service. When creating a new account, you get 1 month of premium for free which is enough to test the premium features :)
         ENABLE_PREMIUM = subscription and subscription.active
 
         # Custom collections
-        added_custom_collection = await cookidoo.add_custom_collection(
+        added_custom_collection = await cookidoo.collections.custom.add(
             "TEST_COLLECTION"
         )
-        _custom_collections = await cookidoo.get_custom_collections()
-        await cookidoo.add_recipes_to_custom_collection(
+        _custom_collections = await cookidoo.collections.custom.list()
+        await cookidoo.collections.custom.add_recipes(
             added_custom_collection.id, ["r907015"]
         )
-        _custom_collections = await cookidoo.get_custom_collections()
-        await cookidoo.remove_recipe_from_custom_collection(
+        _custom_collections = await cookidoo.collections.custom.list()
+        await cookidoo.collections.custom.remove_recipe(
             added_custom_collection.id, "r907015"
         )
-        _custom_collections = await cookidoo.get_custom_collections()
-        await cookidoo.remove_custom_collection(added_custom_collection.id)
+        _custom_collections = await cookidoo.collections.custom.list()
+        await cookidoo.collections.custom.remove(added_custom_collection.id)
 
         # # Managed collections
-        _added_managed_collection = await cookidoo.add_managed_collection("col500401")
-        _managed_collections = await cookidoo.get_managed_collections()
-        await cookidoo.remove_managed_collection("col500401")
+        _added_managed_collection = await cookidoo.collections.managed.add("col500401")
+        _managed_collections = await cookidoo.collections.managed.list()
+        await cookidoo.collections.managed.remove("col500401")
 
         # Recipe details
-        _recipe_details = await cookidoo.get_recipe_details("r59322")
+        _recipe_details = await cookidoo.recipes.get_details("r59322")
 
         if ENABLE_PREMIUM:
             # Custom recipe
-            added_custom_recipe = await cookidoo.add_custom_recipe_from(
+            added_custom_recipe = await cookidoo.custom_recipes.add_from(
                 "r59322", _recipe_details.serving_size
             )
-            _custom_recipe = await cookidoo.get_custom_recipe(added_custom_recipe.id)
+            _custom_recipe = await cookidoo.custom_recipes.get(added_custom_recipe.id)
 
         # Calendar recipes
-        _added_recipes_to_calendar = await cookidoo.add_recipes_to_calendar(
+        _added_recipes_to_calendar = await cookidoo.calendar.add_recipes(
             datetime.now().date(), ["r907015", "r59322"]
         )
         if ENABLE_PREMIUM:
             _added_custom_recipes_to_calendar = (
-                await cookidoo.add_custom_recipes_to_calendar(
+                await cookidoo.calendar.add_custom_recipes(
                     datetime.now().date(), [added_custom_recipe.id]
                 )
             )
-        _recipes_in_calendar = await cookidoo.get_recipes_in_calendar_week(
+        _recipes_in_calendar = await cookidoo.calendar.week(
             datetime.now().date()
         )
-        _removed_recipes_from_calendar = await cookidoo.remove_recipe_from_calendar(
+        _removed_recipes_from_calendar = await cookidoo.calendar.remove_recipe(
             datetime.now().date(), "r907015"
         )
-        _removed_recipes_from_calendar = await cookidoo.remove_recipe_from_calendar(
+        _removed_recipes_from_calendar = await cookidoo.calendar.remove_recipe(
             datetime.now().date(), "r59322"
         )
         if ENABLE_PREMIUM:
             _removed_custom_recipes_from_calendar = (
-                await cookidoo.remove_custom_recipe_from_calendar(
+                await cookidoo.calendar.remove_custom_recipe(
                     datetime.now().date(), added_custom_recipe.id
                 )
             )
-        _recipes_in_calendar = await cookidoo.get_recipes_in_calendar_week(
+        _recipes_in_calendar = await cookidoo.calendar.week(
             datetime.now().date()
         )
 
         # Shopping list
-        await cookidoo.clear_shopping_list()
+        await cookidoo.shopping_list.clear()
 
         # Ingredients
-        added_ingredients = await cookidoo.add_ingredient_items_for_recipes(
+        added_ingredients = await cookidoo.shopping_list.add_ingredient_items_for_recipes(
             ["r59322", "r907016"]
         )
-        _edited_ingredients = await cookidoo.edit_ingredient_items_ownership(
+        _edited_ingredients = await cookidoo.shopping_list.edit_ingredient_items_ownership(
             [
                 CookidooIngredientItem(
                     **{**ingredient.__dict__, "is_owned": not ingredient.is_owned},
@@ -149,15 +149,15 @@ async def main():
                 )
             ]
         )
-        _ingredients = await cookidoo.get_ingredient_items()
-        _recipes = await cookidoo.get_shopping_list_recipes()
-        await cookidoo.remove_ingredient_items_for_recipes(["r59322"])
+        _ingredients = await cookidoo.shopping_list.ingredients()
+        _recipes = await cookidoo.shopping_list.recipes()
+        await cookidoo.shopping_list.remove_ingredient_items_for_recipes(["r59322"])
 
         if ENABLE_PREMIUM:
-            added_ingredients = await cookidoo.add_ingredient_items_for_custom_recipes(
+            added_ingredients = await cookidoo.shopping_list.add_ingredient_items_for_custom_recipes(
                 [added_custom_recipe.id]
             )
-            _edited_ingredients = await cookidoo.edit_ingredient_items_ownership(
+            _edited_ingredients = await cookidoo.shopping_list.edit_ingredient_items_ownership(
                 [
                     CookidooIngredientItem(
                         **{**ingredient.__dict__, "is_owned": not ingredient.is_owned},
@@ -169,20 +169,20 @@ async def main():
                 ]
             )
 
-            _ingredients = await cookidoo.get_ingredient_items()
-            _recipes = await cookidoo.get_shopping_list_recipes()
-            await cookidoo.remove_ingredient_items_for_custom_recipes(
+            _ingredients = await cookidoo.shopping_list.ingredients()
+            _recipes = await cookidoo.shopping_list.recipes()
+            await cookidoo.shopping_list.remove_ingredient_items_for_custom_recipes(
                 [added_custom_recipe.id]
             )
 
             # Remove after usage
-            await cookidoo.remove_custom_recipe(added_custom_recipe.id)
+            await cookidoo.custom_recipes.remove(added_custom_recipe.id)
 
         # Additional items
-        added_additional_items = await cookidoo.add_additional_items(
+        added_additional_items = await cookidoo.shopping_list.add_additional_items(
             ["Fleisch", "Fisch"]
         )
-        edited_additional_items = await cookidoo.edit_additional_items_ownership(
+        edited_additional_items = await cookidoo.shopping_list.edit_additional_items_ownership(
             [
                 CookidooAdditionalItem(
                     **{
@@ -196,7 +196,7 @@ async def main():
                 )
             ]
         )
-        await cookidoo.edit_additional_items(
+        await cookidoo.shopping_list.edit_additional_items(
             [
                 CookidooAdditionalItem(
                     **{
@@ -210,8 +210,8 @@ async def main():
                 )
             ]
         )
-        _additional_items = await cookidoo.get_additional_items()
-        await cookidoo.remove_additional_items(
+        _additional_items = await cookidoo.shopping_list.additional_items()
+        await cookidoo.shopping_list.remove_additional_items(
             [
                 added_additional_item.id
                 for added_additional_item in added_additional_items
